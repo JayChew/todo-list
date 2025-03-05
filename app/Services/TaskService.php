@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Http\Resources\TaskResource;
-use App\Events\TaskUpdated;
+use App\Events\TaskListUpdated;
 use App\Models\Task;
 use App\Jobs\ProcessTask;
 
@@ -26,7 +26,7 @@ class TaskService
   {
     $task->update(attributes: $data);
 
-    broadcast(new TaskUpdated(new TaskResource($task)))->toOthers();
+    broadcast(new TaskListUpdated(new TaskResource($task)))->toOthers();
     
     return $task;
   }

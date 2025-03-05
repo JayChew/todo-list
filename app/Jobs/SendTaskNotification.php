@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Http\Resources\TaskResource;
 use App\Mail\TaskNotification;
+use App\Events\TaskListUpdated;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -41,5 +42,7 @@ class SendTaskNotification implements ShouldQueue
         
         // 记录日志
         Log::info(message: "新任务创建通知：{$this->task->title}");
+
+        broadcast(new TaskListUpdated($this->task))->toOthers();
     }
 }

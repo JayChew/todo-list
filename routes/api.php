@@ -23,9 +23,17 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware('auth:sanctum')->group(function() {
         Broadcast::routes();
+
         Route::get('/user', function (Request $request){ return response()->json($request->user());});
+        
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::delete('tasks/bulk', [TaskController::class, 'destroyBulk'])->name('tasks.bulk-delete');
         Route::apiResource('tasks', TaskController::class);
+
+        // Route to get Authorization Bearer token
+        Route::get('/auth/token', function (Request $request) {
+            $token = $request->user()->createToken(name: 'api-token')->plainTextToken;
+            return response()->json(['token' => $token]);
+        });
     });
 });

@@ -30,27 +30,25 @@ class AuthController extends Controller
 
         $token = $user->createToken(name: 'api-token')->plainTextToken;
 
-        return response()->json(data: ['token' => $token], status: 201);
+        return response()->json(data: ['token' => $token, 'user' => $user], status: 201);
     }
 
     public function login(Request $request)
     {
         // Validate request input
         $request->validate([
-            'email' => 'required|email',
+            'email' => 'required|email|exists:users',
             'password' => 'required',
         ]);
 
-        // Attempt to authenticate user
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
         $user = $request->user(); // Gets the authenticated user
         $token = $user->createToken('api-token')->plainTextToken; // Generates token
-
-        // Regenerate session (important for security)
-        $request->session()->regenerate();
 
         return response()->json([
             'user' =>  $user,
@@ -61,8 +59,7 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::guard('web')->logout();
-        $request->session()->invalidate();
+        $request->user()->tokens()->delete();
         return response()->json(['message' => 'Logged out']);
     }
 }

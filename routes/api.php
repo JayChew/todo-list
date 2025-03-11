@@ -20,11 +20,13 @@ Route::prefix('v1')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
     Route::post('login', [AuthController::class, 'login']);
 
-    Route::middleware('auth:sanctum')->group(function() {
+    Route::middleware('auth:sanctum')->group(function () {
         Broadcast::routes();
 
-        Route::get('/user', function (Request $request){ return response()->json($request->user());});
-        
+        Route::get('/user', function (Request $request) {
+            return response()->json($request->user());
+        });
+
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::delete('tasks/bulk', [TaskController::class, 'destroyBulk'])->name('tasks.bulk-delete');
         Route::apiResource('tasks', TaskController::class);

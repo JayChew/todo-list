@@ -13,7 +13,7 @@ class AuthController extends Controller
     {
         $this->middleware('auth:sanctum')->except(['login', 'register']);
     }
-    
+
     public function register(Request $request)
     {
         $request->validate(rules: [
@@ -47,7 +47,6 @@ class AuthController extends Controller
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
-        $user = $request->user(); // Gets the authenticated user
         $token = $user->createToken('api-token')->plainTextToken; // Generates token
 
         return response()->json([
@@ -63,4 +62,3 @@ class AuthController extends Controller
         return response()->json(['message' => 'Logged out']);
     }
 }
-
